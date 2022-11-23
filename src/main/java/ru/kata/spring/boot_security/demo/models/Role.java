@@ -11,20 +11,20 @@ public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private long id;
 
     @Column(name = "role")
     private String name;
 
-    @ManyToMany(mappedBy = "userRoles", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "userRoles")
     private Set<User> users;
 
     public Role(long id) {
         this.id = id;
     }
 
-    public Role(long id, String name) {
-        this.id = id;
+    public Role(String name) {
         this.name = name;
     }
 
@@ -60,7 +60,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return name;
+        return name.substring(name.lastIndexOf('_') + 1);
     }
 }
 

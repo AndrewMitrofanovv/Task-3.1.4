@@ -11,8 +11,8 @@ import ru.kata.spring.boot_security.demo.Services.Security.UserDetailService;
 
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private SuccessUserHandler successUserHandler;
-    private UserDetailService userDetailService;
+    private final SuccessUserHandler successUserHandler;
+    private final UserDetailService userDetailService;
 
     @Autowired
     public WebSecurityConfig(SuccessUserHandler successUserHandler, UserDetailService userDetailService) {
@@ -27,14 +27,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated()
+
                 .and()
+
                 .formLogin()
-                .successHandler(successUserHandler)
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
                 .permitAll()
-                .and()
-                .logout()
-                .permitAll();
+                .successHandler(successUserHandler);
+        http.logout()
+                .permitAll()
+                .logoutSuccessUrl("/login")
+                .and().csrf().disable();
     }
+
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailService).passwordEncoder(bCryptPasswordEncoder());

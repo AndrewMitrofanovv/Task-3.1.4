@@ -23,10 +23,10 @@ public class UserDetailService implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findUserByUsername(username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
         if (userOptional.isEmpty())
-            throw new UsernameNotFoundException(String.format("User with %s username not found", username));
+            throw new UsernameNotFoundException(String.format("User with %s username not found", email));
         return userOptional.get();
 
 

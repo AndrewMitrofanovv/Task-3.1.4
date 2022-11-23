@@ -1,11 +1,12 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Set;
 
@@ -19,12 +20,6 @@ public class User implements UserDetails {
     @Column
     private Long id;
 
-    @Size(min = 3, message = "Не меньше 3 знаков")
-    @NotEmpty
-    @Column
-    private String username;
-
-    @Size(min = 5, message = "Не меньше 5 знаков")
     @NotEmpty
     @Column
     private String password;
@@ -36,9 +31,12 @@ public class User implements UserDetails {
     private String lastname;
 
     @Column
+    private Byte age;
+    @Column
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
     @JoinTable(name = "users_roles",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "roles_id", referencedColumnName = "id")})
@@ -48,11 +46,11 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, String password) {
-        this.username = username;
+    public User(String email, String password) {
+        this.email = email;
         this.password = password;
-    }
 
+    }
 
     public Long getId() {
         return id;
@@ -78,29 +76,31 @@ public class User implements UserDetails {
         this.lastname = lastname;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public Byte getAge() {
+        return age;
+    }
+
+    public void setAge(byte age) {
+        this.age = age;
     }
 
     public Set<Role> getUserRoles() {
         return userRoles;
     }
 
-    public boolean addRole(Set<Role> role) {
-        return userRoles.addAll(role);
-    }
-
     public void setUserRoles(Set<Role> userRoles) {
         this.userRoles = userRoles;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public void setPassword(String password) {
         this.password = password;
@@ -118,8 +118,9 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
